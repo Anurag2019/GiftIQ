@@ -1,30 +1,23 @@
 from flask import Flask, request, jsonify
 from flasgger import Swagger
-from recommender import analyze_profile, generate_gift_links
+from matcher import load_data, detect_interests, match_products
+from social_extractors import extract_from_instagram, extract_from_twitter
 
 app = Flask(__name__)
-
-swagger = Swagger(app, template={
-    "info": {
-        "title": "GIFTIQ API",
-        "description": "AI-based gift recommendation API",
-        "version": "1.0.0"
-    }
-})
-
-
-@app.route("/", methods=["GET"])
-def health():
-    return {"status": "ok", "service": "GIFTIQ API"}
+Swagger(app)
 
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
     """
-    Generate gift recommendations
+    Gift Recommendation API
     ---
     tags:
-      - Gift Recommendation
+      - Recommendation
+    consumes:
+      - application/json
+    produces:
+      - application/json
     parameters:
       - in: body
         name: payload
@@ -32,28 +25,56 @@ def recommend():
         schema:
           type: object
           required:
-            - profile_text
+            - source
+            - value
           properties:
-            profile_text:
+            source:
               type: string
-              example: Gym lover, coffee addict, software developer
+              example: twitter
+            value:
+              type: string
+              example: soumyaRNayak
     responses:
       200:
-        description: Gift recommendations generated
-      400:
-        description: Invalid input
+        description: Successful response
     """
-    data = request.get_json()
+    payload = request.get_json()
 
-    if not data or "profile_text" not in data:
-        return jsonify({"error": "profile_text is required"}), 400
+    source = payload.get("source")
+    value = payload.get("value")
 
-    interests = analyze_profile(data["profile_text"])
-    gift_links = generate_gift_links(interests)
+    if not source or not value:
+        return jsonify({"error": "source and value are required"}), 400
+
+    data = load_data()
+
+    try:
+        if source == "instagram":
+            social = extract_from_instagram(value)
+            text = social["bio"] + " " + " ".join(social["posts"])
+
+        elif source == "twitter":
+            social = extract_from_twitter(value)
+            text = " ".join(social.get("posts", ""))
+            if not text:
+                text = value   # fallback to manual text
+
+        elif source == "manual":
+            text = value
+
+        else:
+            return jsonify({"error": "Invalid source"}), 400
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    interests = detect_interests(text, data["interest_map"])
+    products = match_products(interests, data["products"])
 
     return jsonify({
-        "interests_detected": interests,
-        "recommendations": gift_links
+        "source": source,
+        "detected_interests": interests,
+        "products": products
     })
 
 
