@@ -10,54 +10,67 @@ st.set_page_config(
     layout="wide"
 )
 
-# ----------------------------
-# Custom Styling
-# ----------------------------
-st.markdown("""
-<style>
-    /* Sidebar background color */
-    [data-testid="stSidebar"] {
-        background-color: #f0f2f6;
-    }
-    
-    /* Sidebar text styling */
-    [data-testid="stSidebar"] > div:first-child {
-        background-color: #f0f2f6;
-    }
-    
-    /* Radio button hover effect */
-    [data-testid="stRadio"] label:hover {
-        background-color: #e8eaf6;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transform: translateX(2px);
-    }
-    
-    /* Radio button active/selected styling */
-    [data-testid="stRadio"] label {
-        padding: 12px 10px;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        font-weight: 500;
-    }
-    
-    /* Hover effect for menu items */
-    [role="radio"] {
-        cursor: pointer;
-    }
-    
-    /* Sidebar menu item styling */
-    [data-testid="stSidebar"] [role="radio"] label span {
-        transition: color 0.3s ease;
-    }
-    
-    [data-testid="stSidebar"] [role="radio"] label:hover span {
-        color: #1f77b4;
-    }
-</style>
-""", unsafe_allow_html=True)
+# def apply_sidebar_hover_style():
+st.markdown(
+        """
+        <style>
+          .stApp {
+    background-image: 
+        linear-gradient(
+            rgba(255, 255, 255, 0.75),
+            rgba(255, 255, 255, 0.75)
+        ),
+        url("https://images.unsplash.com/photo-1513885535751-8b9238bd345a");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 
-# ----------------------------
+/* Main content transparency */
+.block-container {
+    background: rgba(255, 255, 255, 0.65);
+    padding: 2rem;
+    border-radius: 18px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+        /* Sidebar background */
+        section[data-testid="stSidebar"] {
+            background-color: #0F172A;
+        }
+
+        /* Sidebar text */
+        section[data-testid="stSidebar"] * {
+            color: white;
+        }
+
+        /* Radio item container */
+        div[role="radiogroup"] > label {
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        /* Hover effect */
+        div[role="radiogroup"] > label:hover {
+            background-color: #22C55E; /* GiftIQ green */
+            color: black;
+            cursor: pointer;
+        }
+
+        /* Selected item */
+        div[role="radiogroup"] > label[data-checked="true"] {
+            background-color: #16A34A;
+            color: black;
+            font-weight: bold;
+        }
+
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+#----------------------------
 # Session State Init
 # ----------------------------
 if "page" not in st.session_state:
@@ -73,7 +86,7 @@ st.sidebar.title("🎁 GiftIQ")
 st.sidebar.caption("*Smarter Gifts, Powered By Insight*")
 
 menu = st.sidebar.radio(
-    "Navigate",
+    " ",
     ["Home", "Analyze Profile", "Gift Recommendations", "About"],
     index=["Home", "Analyze Profile", "Gift Recommendations", "About"].index(st.session_state.page)
 )

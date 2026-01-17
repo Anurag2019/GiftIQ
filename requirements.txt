@@ -1,2 +1,5 @@
 streamlit
 flask
+instaloader
+snscrape
+
