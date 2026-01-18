@@ -83,7 +83,26 @@ if "analysis_result" not in st.session_state:
 # ----------------------------
 # Sidebar Navigation
 # ----------------------------
+
+    
 st.sidebar.image("assets/logo.png",width=150)
+# Custom CSS to hide the "View fullscreen" button
+
+
+
+
+st.markdown("""
+<style>
+/* Hide fullscreen button on hover */
+button[title="View fullscreen"],
+button[title="Fullscreen"],
+button[aria-label="View fullscreen"],
+button[aria-label="Fullscreen"] {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.title("🎁 GiftIQ")
 st.sidebar.caption("*Smarter Gifts, Powered By Insights*")
 
