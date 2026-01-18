@@ -38,7 +38,7 @@ TRAIT_MAP = {
     "foodie": ["food", "cook", "chef", "cuisine", "recipe", "restaurant"],
     "fashionista": ["fashion", "style", "trend", "outfit", "designer", "clothes"],
     "dancer": ["dance", "choreography", "movement", "ballet", "hip hop"],
-    "nature_lover": ["nature", "garden", "plant", "outdoor", "environment"],
+    "nature_lover": ["nature", "garden", "plant", "outdoor", "environment","phoro"],
     "gamer": ["gaming", "game", "esports", "online", "console"]
 }
 
@@ -180,6 +180,51 @@ GIFT_MAP = [
         "image": "https://m.media-amazon.com/images/I/61R2SfqKcgL._SX679_.jpg",
         "link": "https://amazon.in/s?k=portable+neck+pillow",
         "tags": ["comfort", "flights", "long journeys"]
+    },
+    {
+        "title": "Compact Camera Drone",
+        "category": "travel",
+        "price": 4999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71eTjP0ZVPL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=compact+camera+drone",
+        "tags": ["drone", "camera", "travel", "photography"]
+    },
+    {
+        "title": "Travel Camera Phone Lens",
+        "category": "travel",
+        "price": 1999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71qK5N9RWZL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=phone+camera+lens+travel",
+        "tags": ["lens", "phone", "camera", "portable"]
+    },
+    {
+        "title": "Waterproof Action Camera",
+        "category": "travel",
+        "price": 8999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71WIpPQkq4L._SX679_.jpg",
+        "link": "https://amazon.in/s?k=waterproof+action+camera",
+        "tags": ["camera", "waterproof", "action", "adventure"]
+    },
+    {
+        "title": "Camera Cleaning Kit Travel",
+        "category": "travel",
+        "price": 599,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71vCjJ3O9IL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=camera+cleaning+kit",
+        "tags": ["cleaning", "camera", "maintenance"]
+    },
+    {
+        "title": "Portable Camera Stabilizer",
+        "category": "travel",
+        "price": 2999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71cXhQXXZIL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=portable+camera+stabilizer+gimbal",
+        "tags": ["stabilizer", "gimbal", "video", "travel"]
     },
 
     # Fitness
@@ -514,6 +559,24 @@ GIFT_MAP = [
         "link": "https://amazon.in/s?k=eco+friendly+bamboo+set",
         "tags": ["eco", "sustainable", "nature"]
     },
+    {
+        "title": "Wildlife Camera Trap 4K",
+        "category": "nature",
+        "price": 3999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71JGQMlDYaL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=wildlife+camera+trap+4k",
+        "tags": ["camera", "wildlife", "nature", "photography"]
+    },
+    {
+        "title": "Telephoto Camera Lens",
+        "category": "nature",
+        "price": 5499,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71B5dKnYfEL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=telephoto+camera+lens",
+        "tags": ["lens", "wildlife", "photography", "nature"]
+    },
 
     # Photography
     {
@@ -551,6 +614,42 @@ GIFT_MAP = [
         "image": "https://m.media-amazon.com/images/I/71qlW8+gajL._SX679_.jpg",
         "link": "https://amazon.in/s?k=lens+filter+kit",
         "tags": ["filters", "lens", "photography"]
+    },
+    {
+        "title": "DSLR Camera 24MP",
+        "category": "photography",
+        "price": 25999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71Hl2hWC-NL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=dslr+camera+24mp",
+        "tags": ["camera", "dslr", "photography", "professional"]
+    },
+    {
+        "title": "Mirrorless Camera 4K",
+        "category": "photography",
+        "price": 59999,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71iKVnLkHqL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=mirrorless+camera+4k",
+        "tags": ["camera", "mirrorless", "4k", "video"]
+    },
+    {
+        "title": "Camera Memory Card 128GB",
+        "category": "photography",
+        "price": 1299,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71LY-+7EQAL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=camera+memory+card+128gb",
+        "tags": ["memory", "storage", "sd+card"]
+    },
+    {
+        "title": "Professional Camera Bag",
+        "category": "photography",
+        "price": 3499,
+        "currency": "INR",
+        "image": "https://m.media-amazon.com/images/I/71X5Y9P9LHL._SX679_.jpg",
+        "link": "https://amazon.in/s?k=professional+camera+bag",
+        "tags": ["bag", "camera", "storage"]
     },
 
     # Movies & Entertainment

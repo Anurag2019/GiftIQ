@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
-# from flasgger import Swagger
-from matcher import load_data, detect_interests, match_products
+
+
 from social_extractors import extract_from_instagram, extract_from_twitter
 from personality_trait_analyzer import run_full_analysis
 

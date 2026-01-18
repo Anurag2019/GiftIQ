@@ -179,7 +179,7 @@ elif st.session_state.page == "Analyze Profile":
                         response = requests.post(
                             "http://localhost:5000/recommend_gifts",
                             json={"source": source, "value": user_input},
-                            timeout=1000
+                            
                         )
                         
                         data = response.json()
