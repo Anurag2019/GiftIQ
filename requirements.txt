@@ -2,4 +2,4 @@ streamlit
 flask
 instaloader
 snscrape
-
+spacy
