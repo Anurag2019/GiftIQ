@@ -8,7 +8,10 @@ import subprocess
 import sys
 import time
 import os
+import warnings
 from pathlib import Path
+# Suppress warnings
+warnings.filterwarnings('ignore')
 
 processes = []
 

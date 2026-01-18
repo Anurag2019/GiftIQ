@@ -1,16 +1,16 @@
 import re
-import warnings
+
 import spacy
 
-# Suppress warnings
-warnings.filterwarnings('ignore')
+
 
 def clean_text(text: str) -> str:
     text = text.lower()
     text = re.sub(r"http\S+", "", text)        # remove URLs
     text = re.sub(r"@\w+", "", text)           # remove mentions
     text = re.sub(r"#\w+", "", text)           # remove hashtags
-    text = re.sub(r"[^a-zA-Z\s]", "", text)    # remove emojis & symbols
+    # Keep apostrophes and hyphens for contractions and hyphenated words
+    text = re.sub(r"[^a-zA-Z\s\-']", "", text)    # remove emojis & symbols but keep apostrophes and hyphens
     text = re.sub(r"\s+", " ", text).strip()
     return text
 
@@ -22,60 +22,83 @@ def extract_keywords(text: str):
     keywords = set()
 
     for token in doc:
-        if token.pos_ in ["NOUN", "PROPN"] and not token.is_stop:
+        # Include NOUN, PROPN, ADJ (adjectives) and VERB (verbs for better trait detection)
+        if token.pos_ in ["NOUN", "PROPN", "ADJ", "VERB"] and not token.is_stop and len(token.text) > 2:
             keywords.add(token.lemma_)
+    
+    # Also add some multi-word patterns that might be important
+    text_lower = text.lower()
+    multi_word_patterns = [
+        r"indie movie", r"sustainable fashion", r"tech company", r"adventure travel",
+        r"adventure", r"hiking", r"photography", r"fashion", r"travel", r"tech",
+        r"practical gift", r"minimalist", r"promoted", r"birthday", r"friend"
+    ]
+    for pattern in multi_word_patterns:
+        if re.search(pattern, text_lower):
+            keywords.add(pattern.replace(" ", "_"))
 
     return list(keywords)
 TRAIT_MAP = {
-    "creative": ["design", "art", "writing", "photography", "music", "dance", "paint"],
-    "analytical": ["ai", "data", "engineering", "research", "science", "math"],
-    "adventurous": ["travel", "explore", "hiking", "roadtrip", "adventure", "climbing"],
-    "minimalist": ["simple", "clean", "minimal", "organized"],
-    "fitness_focused": ["gym", "workout", "yoga", "health", "run", "sport"],
-    "entrepreneurial": ["startup", "business", "founder", "leader"],
-    "bookworm": ["book", "reading", "novel", "author", "literature"],
-    "musician": ["music", "guitar", "piano", "instrument", "song", "melody"],
-    "foodie": ["food", "cook", "chef", "cuisine", "recipe", "restaurant"],
-    "fashionista": ["fashion", "style", "trend", "outfit", "designer", "clothes"],
-    "dancer": ["dance", "choreography", "movement", "ballet", "hip hop"],
-    "nature_lover": ["nature", "garden", "plant", "outdoor", "environment","phoro"],
-    "gamer": ["gaming", "game", "esports", "online", "console"]
+    "creative": ["design", "art", "writing", "photography", "music", "dance", "paint", "creative", "designer"],
+    "analytical": ["ai", "data", "engineering", "research", "science", "math", "technical", "programmer"],
+    "adventurous": ["travel", "explore", "hiking", "roadtrip", "adventure", "climbing", "adventure_travel", "wanderlust"],
+    "minimalist": ["simple", "clean", "minimal", "organized", "minimalist", "practical", "practical_gift"],
+    "fitness_focused": ["gym", "workout", "yoga", "health", "run", "sport", "fitness", "athletic"],
+    "entrepreneurial": ["startup", "business", "founder", "leader", "entrepreneur", "promoted"],
+    "bookworm": ["book", "reading", "novel", "author", "literature", "reader"],
+    "musician": ["music", "guitar", "piano", "instrument", "song", "melody", "musician"],
+    "foodie": ["food", "cook", "chef", "cuisine", "recipe", "restaurant", "cooking", "culinary"],
+    "fashionista": ["fashion", "style", "trend", "outfit", "designer", "clothes", "sustainable_fashion", "aesthetic"],
+    "dancer": ["dance", "choreography", "movement", "ballet", "hip hop", "dancer"],
+    "nature_lover": ["nature", "garden", "plant", "outdoor", "environment", "hiking", "sustainable"],
+    "gamer": ["gaming", "game", "esports", "online", "console", "gamer"],
+    "tech_enthusiast": ["tech", "tech_company", "technology", "software", "coding"]
 }
 
 def infer_personality_traits(keywords):
     traits = set()
+    
+    # Normalize keywords for matching (lowercase)
+    keywords_lower = [k.lower() for k in keywords]
 
     for trait, signals in TRAIT_MAP.items():
-        if any(word in keywords for word in signals):
+        # Check for direct matches and partial matches
+        if any(word.lower() in keywords_lower or any(word.lower() in k for k in keywords_lower) for word in signals):
             traits.add(trait)
 
     return list(traits)
+
 INTEREST_CATEGORY_MAP = {
-    "travel": ["travel", "trip", "wander", "vacation", "beach", "mountain", "explore", "adventure"],
-    "fitness": ["gym", "fitness", "workout", "yoga", "run", "sport", "health"],
-    "tech": ["ai", "coding", "python", "startup", "tech", "software", "gadget"],
-    "fashion": ["fashion", "style", "outfit", "aesthetic", "designer", "trend"],
-    "gaming": ["gaming", "ps5", "xbox", "esports", "online", "console"],
-    "books": ["books", "reading", "novel", "author", "literature", "library"],
-    "coffee": ["coffee", "cafe", "espresso", "latte", "brew"],
-    "music": ["music", "song", "guitar", "piano", "instrument", "concert"],
-    "dance": ["dance", "choreography", "ballet", "hip hop", "movement"],
-    "food": ["food", "cook", "chef", "cuisine", "recipe", "restaurant", "culinary"],
-    "art": ["art", "paint", "draw", "creative", "design", "illustration"],
-    "nature": ["nature", "garden", "plant", "outdoor", "hiking", "environment"],
-    "photography": ["photo", "photography", "camera", "picture", "visual"],
-    "movies": ["movie", "film", "cinema", "watch", "series", "netflix"],
-    "wellness": ["meditation", "mindfulness", "wellness", "self care", "relax"]
+    "travel": ["travel", "trip", "wander", "vacation", "beach", "mountain", "explore", "adventure", "adventure_travel", "wanderlust", "journey"],
+    "fitness": ["gym", "fitness", "workout", "yoga", "run", "sport", "health", "athletic", "exercise"],
+    "tech": ["ai", "coding", "python", "startup", "tech", "software", "gadget", "technology", "tech_company", "programmer"],
+    "fashion": ["fashion", "style", "outfit", "aesthetic", "designer", "trend", "sustainable_fashion", "clothes"],
+    "gaming": ["gaming", "ps5", "xbox", "esports", "online", "console", "game"],
+    "books": ["books", "reading", "novel", "author", "literature", "library", "book"],
+    "coffee": ["coffee", "cafe", "espresso", "latte", "brew", "beverage"],
+    "music": ["music", "song", "guitar", "piano", "instrument", "concert", "musician", "melody"],
+    "dance": ["dance", "choreography", "ballet", "hip hop", "movement", "dancer"],
+    "food": ["food", "cook", "chef", "cuisine", "recipe", "restaurant", "culinary", "cooking", "gourmet"],
+    "art": ["art", "paint", "draw", "creative", "design", "illustration", "artist"],
+    "nature": ["nature", "garden", "plant", "outdoor", "hiking", "environment", "sustainable", "outdoors"],
+    "photography": ["photo", "photography", "camera", "picture", "visual", "photographer"],
+    "movies": ["movie", "film", "cinema", "watch", "series", "netflix", "indie movie"],
+    "wellness": ["meditation", "mindfulness", "wellness", "self care", "relax", "relaxation", "mindful"]
 }
 
 def classify_interests(keywords):
     categories = set()
+    
+    # Normalize keywords for matching (lowercase)
+    keywords_lower = [k.lower() for k in keywords]
 
     for category, signals in INTEREST_CATEGORY_MAP.items():
-        if any(word in keywords for word in signals):
+        # Check for direct matches and partial matches
+        if any(word.lower() in keywords_lower or any(word.lower() in k for k in keywords_lower) for word in signals):
             categories.add(category)
 
     return list(categories)
+
 GIFT_MAP = [
     # tech
     {
@@ -741,8 +764,23 @@ def recommend_gifts(categories):
 def run_full_analysis(raw_bio: str):
     clean = clean_text(raw_bio)
     keywords = extract_keywords(clean)
-    traits = infer_personality_traits(keywords)
-    interests = classify_interests(keywords)
+    
+    # Add raw text matching as fallback to catch more keywords
+    raw_text_lower = raw_bio.lower()
+    additional_keywords = set()
+    
+    # Extract additional single-word keywords from raw text
+    for word in raw_bio.lower().split():
+        # Clean the word
+        cleaned_word = re.sub(r"[^a-zA-Z\-']", "", word)
+        if len(cleaned_word) > 2 and cleaned_word not in ['the', 'and', 'for', 'with', 'that', 'this', 'from']:
+            additional_keywords.add(cleaned_word)
+    
+    # Combine keywords
+    all_keywords = list(set(keywords) | additional_keywords)
+    
+    traits = infer_personality_traits(all_keywords)
+    interests = classify_interests(all_keywords)
     gifts = recommend_gifts(interests)
 
     return {

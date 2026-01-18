@@ -84,7 +84,7 @@ if "analysis_result" not in st.session_state:
 # Sidebar Navigation
 # ----------------------------
 st.sidebar.title("🎁 GiftIQ")
-st.sidebar.caption("*Smarter Gifts, Powered By Insight*")
+st.sidebar.caption("*Smarter Gifts, Powered By Insights*")
 
 menu = st.sidebar.radio(
     " ",
@@ -100,7 +100,7 @@ if menu != st.session_state.page:
 # ----------------------------
 if st.session_state.page == "Home":
     st.title("🎁 GiftIQ")
-    st.subheader("*Smarter Gifts, Powered By Insight*")
+    st.subheader("*Smarter Gifts, Powered By Insights*")
 
     st.markdown("""
     ### 🎯 The Problem
@@ -127,37 +127,122 @@ if st.session_state.page == "Home":
 # ----------------------------
 elif st.session_state.page == "Analyze Profile":
     st.title("🔍 Analyze Profile")
-
-    input_type = st.selectbox(
+    # if "input_type" not in st.session_state:
+    #     st.session_state.input_type = "Select Input Type"
+    # # Track if user clicked the alternative input button
+    
+        
+    # def on_input_type_change():
+    #     if st.session_state.input_type != "Select Input Type":
+    #         st.session_state.show_alternative_input = True
+    input_type=st.selectbox(
         "Choose input type",
         [   "Select Input Type",
             "Public Twitter/X Handle",
             "Public Instagram Handle",
             "Manual Bio Text"
         ],
+        # key="input_type",
+        # on_change=on_input_type_change,
         index=0
     )
+    
 
+    if "show_alternative_input" not in st.session_state :
+        st.session_state.show_alternative_input = False
+    
     # Customize label based on selected input type
+    # When alternative input is open, disable the upper input field
+    input_disabled = st.session_state.show_alternative_input
+    
     if input_type == "Select Input Type":
         user_input = st.text_input("Enter handle or bio text", disabled=True)
     elif input_type == "Public Twitter/X Handle":
-        user_input = st.text_input("𝕏 Enter Twitter/X Handle", placeholder="@twitter_username")
+        user_input = st.text_input("𝕏 Enter Twitter/X Handle", placeholder="@twitter_username", disabled=input_disabled)
     elif input_type == "Public Instagram Handle":
-        user_input = st.text_input("📷 Enter Instagram Handle", placeholder="@intagram_username")
+        user_input = st.text_input("📷 Enter Instagram Handle", placeholder="@intagram_username", disabled=input_disabled)
     elif input_type == "Manual Bio Text":
-        user_input = st.text_input("✍️ Enter Bio Text", placeholder="Paste your bio text here")
+        user_input = st.text_input("✍️ Enter Bio Text", placeholder="Paste your bio text here", disabled=input_disabled)
 
-    st.markdown("[**Bio unavailable or missing?**](https://www.example.com) - Get help finding profile information")
+    # Bio unavailable button - always enabled
+    if st.button("**Bio unavailable or missing?** - Explore smarter alternatives", disabled=False):
+        st.session_state.show_alternative_input = True
+        st.rerun()
+
+    # When user selects any of the 3 options, auto-close the alternative input section
+    if input_type != "Select Input Type" and st.session_state.show_alternative_input:
+        st.session_state.show_alternative_input = False
+        st.rerun()
+
+    # Show alternative input form if button was clicked
+    if st.session_state.show_alternative_input:
+        st.markdown("---")
+        st.subheader("📝 Tell Us About Them")
+        
+        alternative_bio = st.text_area(
+            "Share personal details about the person",
+            placeholder="""Example: My best friend since college, loves hiking and photography. She just got promoted at her tech company. Upcoming birthday next month. Interests: adventure travel, indie movies, sustainable fashion.She's minimalist and prefers practical gifts.""",
+            height=150
+        )
+        
+        col_alt1, col_alt2 = st.columns(2)
+        
+        with col_alt1:
+            if st.button("🧠 Analyze from Details", key="alt_analyze"):
+                if not alternative_bio.strip():
+                    st.warning("Please share some details about the person.")
+                else:
+                    error_msg = None
+                    try:
+                        with st.spinner("Analyzing personality & interests..."):
+                            # Call the backend API with manual source and the alternative bio
+                            response = requests.post(
+                                "http://localhost:5000/recommend_gifts",
+                                json={"source": "manual", "value": alternative_bio},
+                            )
+                            
+                            data = response.json()
+                            
+                            # Check if the API returned a failure
+                            if not data.get("success", True):
+                                error_msg = "❌ **Analysis Failed**\n\nPlease try again with more details."
+                            elif response.status_code == 200:
+                                st.session_state.analysis_result = {
+                                    "traits": data.get("traits", []),
+                                    "interests": data.get("interests", []),
+                                    "gifts": data.get("gifts", [])
+                                }
+                                st.success("✅ Analysis complete!")
+                                st.session_state.page = "Gift Recommendations"
+                                st.rerun()
+                            else:
+                                error_msg = "❌ Something went wrong. Please try again."
+                    except requests.exceptions.ConnectionError:
+                        error_msg = "❌ Cannot connect to API server. Make sure it's running on http://localhost:5000"
+                    except Exception as e:
+                        error_msg = f"❌ Error: {str(e)}"
+                    
+                    # Display error message after spinner stops
+                    if error_msg:
+                        st.error(error_msg)
+        
+        with col_alt2:
+            if st.button("✕ Cancel", key="alt_cancel"):
+                st.session_state.show_alternative_input = False
+                # Reset the input type to "Select Input Type" to fully reset state
+                st.rerun()
+        
+        st.markdown("---")
 
     st.info(
         "🔒 Privacy First: We only analyze **public information** or text you provide. "
         "No login, no private data, no scraping behind authentication."
     )
-
-    col1, col2 = st.columns(2)
+    if not st.session_state.show_alternative_input:
+     col1, col2 = st.columns(2)
     
-    with col1:
+    
+     with col1:
         if st.button("🧠 Analyze Personality"):
             if input_type == "Select Input Type":
                 st.warning("Please select an input type.")
@@ -212,7 +297,7 @@ elif st.session_state.page == "Analyze Profile":
                 if error_msg:
                     st.error(error_msg)
     
-    with col2:
+     with col2:
         if st.button("← Back"):
             st.session_state.page = "Home"
             st.rerun()
