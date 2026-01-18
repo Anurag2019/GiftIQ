@@ -83,6 +83,7 @@ if "analysis_result" not in st.session_state:
 # ----------------------------
 # Sidebar Navigation
 # ----------------------------
+st.sidebar.image("assets/logo.png",width=150)
 st.sidebar.title("🎁 GiftIQ")
 st.sidebar.caption("*Smarter Gifts, Powered By Insights*")
 
